@@ -59,3 +59,10 @@ form label {
   font-weight: bold;
   color: maroon;
 }
+
+/* March 8 HW2 1.b */
+table#movies th.hilite {
+ background-color: yellow;
+}
+/* ---------------- */
+
