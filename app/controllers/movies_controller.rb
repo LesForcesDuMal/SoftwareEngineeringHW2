@@ -8,24 +8,69 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #/* March 8 HW2 1.b */
-    @all_ratings = ['G','PG','PG-13','R']
-    
-    @sortChoice = params[:sortChoice]
-    if @sortChoice == 'title'
-      @movies = Movie.order(:title)
-    elsif @sortChoice == 'release_date'
-        @movies = Movie.order(:release_date)
-    else
-          @movies = Movie.all
+    #/* March 8 HW2 part 1 and 2 */
+    @all_ratings = Movie.all_ratings #the ratings are fetched from the Movie model
+
+    @sortByDate
+    @sortByTitle
+    @ratingsSortEnabled
+        puts params[:session]
+
+    if params[:commit] == "Refresh"
+      puts params[:session]
+      puts "!!Need to sort according to ratings"
+      @ratingsSortEnabled = true
     end
+    
+    
+    #Combination of work for HW2 part 1 and 2, checks to see if 
+    #parameters passed are either "title" or "date", sorts accordingly
+    #if they are neither, then just sort according to checkboxes
+    #could not get to sort with the check boxes and the date/title parameters. 
+    #You can see that, the "refresh" button is unclickable,
+    #thus can't be sorted that way
+    @sortChoice = params[:sortChoice]
+    
+    if @sortChoice == 'title'
+      @sortByDate = false
+      @sortByTitle = true
+      @movies = Movie.order(:title)
+      
+      #sort according to release date
+    elsif @sortChoice == 'release_date'
+    
+        
+        @movies = Movie.order(:release_date)
+        
+
+    else
+        #Returns all movies if 
+        ##it can not find ratings being checked off
+        if params[:ratings] == nil
+          puts "CRASH: no ratings found"
+          @movies = Movie.all
+        else
+        
+        @desiredRatings = params[:ratings]
+        puts @desiredRatings
+        
+        @ratings = []
+        @desiredRatings.each do |rating|
+          @ratings << rating
+        end
+        puts @ratings
+        
+        @movies = Movie.where(:rating=>@ratings)
+        end
+        
+    end
+    
+
     #/* ---------------- */
   end
-  
-  def sort_title
-     @movies = Movie.order(:title)
-     #redirect_to movies_path
-  end
+ 
+ 
+
 
   def new
     # default: render 'new' template
